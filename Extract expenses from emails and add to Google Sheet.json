@@ -1,0 +1,201 @@
+{
+  "name": "Extract expenses from emails and add to Google Sheet",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"subject\"].toLowerCase()}}",
+              "operation": "regex",
+              "value2": "=/{{$json[\"subjectPatterns\"].toLowerCase()}}/"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "Check subject",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -32,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "8ae10165-842b-4326-be6e-d7e707e1d8da"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "subjectPatterns",
+              "value": "(expenses|reciept)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Setup Variables",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -208,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "33190cc8-279f-4b7f-98b9-cfd4b45a23db"
+    },
+    {
+      "parameters": {
+        "mailbox": "Inbox",
+        "format": "resolved",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "name": "Check for new emails",
+      "type": "n8n-nodes-base.emailReadImap",
+      "position": [
+        -384,
+        -224
+      ],
+      "typeVersion": 1,
+      "id": "e1b207ed-e7d2-4be5-b377-d6e04e1abbe0"
+    },
+    {
+      "parameters": {
+        "binaryPropertyName": "attachment_0"
+      },
+      "name": "Read Receipts",
+      "type": "n8n-nodes-base.mindee",
+      "position": [
+        192,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "187d8f16-e2d3-4492-a231-e02202593f60"
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "Date",
+              "value": "={{$json[\"date\"]}}"
+            },
+            {
+              "name": "Description",
+              "value": "={{$node[\"Check for new emails\"].json[\"subject\"].split(\"-\")[1]}}"
+            },
+            {
+              "name": "Category",
+              "value": "={{$json[\"category\"]}}"
+            },
+            {
+              "name": "Currency",
+              "value": "={{$json[\"currency\"]}}"
+            },
+            {
+              "name": "Amount",
+              "value": "={{$json[\"total\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set column data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        384,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "ce632794-7977-443b-aa39-27f9d40c70cb"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "append",
+        "sheetId": "1xAtx1ORZYKu4urgqpOe3DawFjiWeOZO0VCVvOlQYnaE",
+        "range": "A:E",
+        "options": {}
+      },
+      "name": "Add to Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        560,
+        -240
+      ],
+      "typeVersion": 1,
+      "id": "c4683252-7198-4404-a9fb-dd23177ad692"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Check subject": {
+      "main": [
+        [
+          {
+            "node": "Read Receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Receipts": {
+      "main": [
+        [
+          {
+            "node": "Set column data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set column data": {
+      "main": [
+        [
+          {
+            "node": "Add to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setup Variables": {
+      "main": [
+        [
+          {
+            "node": "Check subject",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for new emails": {
+      "main": [
+        [
+          {
+            "node": "Setup Variables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a602a9e7-1fe8-4438-9b29-313384def953",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "45e410c441539c43e0cb2e495fb82ef9108659451bd77c3a50fde40e0711c7af"
+  },
+  "id": "C5IFZsuxofhfuSjy",
+  "tags": []
+}
