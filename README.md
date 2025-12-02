@@ -47,7 +47,7 @@ Each bot is stored as a separate **JSON workflow file** that can be imported int
 
 ---
 
-## 🔧 Adding more bots
+##  Adding more bots
 
 For each new workflow I will:
 
