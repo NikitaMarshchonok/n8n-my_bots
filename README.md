@@ -7,7 +7,7 @@ Each bot is stored as a separate **JSON workflow file** that can be imported int
 
 ---
 
-## 📌 Workflow 1: Gmail → Google Sheets – Expense Tracker
+##  Workflow 1: Gmail → Google Sheets – Expense Tracker
 
 **File:** `gmail-expenses-to-sheets.json`  
 *(rename here if your file has a different name)*
