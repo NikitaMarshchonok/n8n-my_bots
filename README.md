@@ -56,7 +56,7 @@ For each new workflow I will:
 3. Document it in this README under a new section:
 
 ```text
-## 📌 Workflow N: Name
+##  Workflow N: Name
 
 File: `file-name.json`
 
