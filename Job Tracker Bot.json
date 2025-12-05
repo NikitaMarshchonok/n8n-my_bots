@@ -1,0 +1,151 @@
+{
+  "name": "Job Tracker Bot",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "every5Minutes"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {
+          "q": "subject:(application OR applied OR vacancy OR position OR interview) in:inbox is:unread"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        -304
+      ],
+      "id": "fa07d803-ed78-4ad0-a477-f6d0c69d0b7d",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8w5h2oqp0K63uAuy",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [
+        512,
+        -304
+      ],
+      "id": "2f5072af-64d1-4b41-a66f-e4ff39347768",
+      "name": "Prepare Job Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1P5bjoq628ent13r03pUdRr-oz4CqFqHVIEldxOkGMOo/edit?gid=653298303#gid=653298303",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "JobTracker",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        864,
+        -384
+      ],
+      "id": "5c8737a2-209f-4b7e-87e0-d5bf29c1c36b",
+      "name": "Save to Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "v1iK2XQ0KsVRKAUj",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "222096214",
+        "text": "={{\n  '🧑‍💻 New job email\\n' +\n  'Subject: ' + ($json.email_subject || $json.subject || '—') + '\\n' +\n  'Company: ' + ($json.company || '—') + '\\n' +\n  'Source: ' + ($json.source || '—') + '\\n' +\n  'Status: ' + ($json.status || 'new') + '\\n'\n}}\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        864,
+        -192
+      ],
+      "id": "54478054-bc39-4faf-b528-ab59d9cacbbe",
+      "name": "Send to Telegram",
+      "webhookId": "5eeafc82-e19e-4752-8497-2fed73de095d",
+      "credentials": {
+        "telegramApi": {
+          "id": "ouEiOmfGFDWpdaat",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare Job Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Job Data": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Jerusalem",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "afe58f84-5afc-4c2c-9351-3b4321479b04",
+  "meta": {
+    "instanceId": "45e410c441539c43e0cb2e495fb82ef9108659451bd77c3a50fde40e0711c7af"
+  },
+  "id": "nZFF5sr7p9pwB3Dj",
+  "tags": []
+}
